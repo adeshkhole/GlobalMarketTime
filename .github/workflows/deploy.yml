@@ -44,6 +44,9 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          VITE_ALPHA_VANTAGE_API_KEY: ${{ secrets.VITE_ALPHA_VANTAGE_API_KEY }}
+          VITE_API_BASE_URL: https://www.alphavantage.co/query
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

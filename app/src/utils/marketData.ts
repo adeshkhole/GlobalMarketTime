@@ -3,29 +3,33 @@ import type { Market, MarketStatusInfo } from '@/types/market';
 // Holiday lists for 2026 (YYYY-MM-DD format)
 const indiaHolidays2026 = [
   '2026-01-26', // Republic Day
-  '2026-03-10', // Holi
-  '2026-04-14', // Dr. Babasaheb Ambedkar Jayanti
-  '2026-04-15', // Good Friday
+  '2026-03-03', // Holi
+  '2026-03-26', // Shri Ram Navami
+  '2026-03-31', // Shri Mahavir Jayanti
+  '2026-04-03', // Good Friday
+  '2026-04-14', // Dr. Baba Saheb Ambedkar Jayanti
   '2026-05-01', // Maharashtra Day
-  '2026-08-15', // Independence Day
-  '2026-08-17', // Parsi New Year
-  '2026-10-02', // Gandhi Jayanti
-  '2026-10-23', // Dussehra
-  '2026-11-04', // Diwali (Muhurat Trading)
-  '2026-11-14', // Gurunanak Jayanti
+  '2026-05-28', // Bakri Id
+  '2026-06-26', // Muharram
+  '2026-09-14', // Ganesh Chaturthi
+  '2026-10-02', // Mahatma Gandhi Jayanti
+  '2026-10-20', // Dussehra
+  '2026-11-10', // Diwali-Balipratipada
+  '2026-11-24', // Guru Nanak Jayanti
   '2026-12-25', // Christmas
 ];
 
 const usHolidays2026 = [
-  '2026-01-01', // New Year
+  '2026-01-01', // New Year's Day
   '2026-01-19', // Martin Luther King Jr. Day
-  '2026-02-16', // Presidents Day
+  '2026-02-16', // Washington's Birthday (Presidents' Day)
   '2026-04-03', // Good Friday
   '2026-05-25', // Memorial Day
-  '2026-07-04', // Independence Day
+  '2026-06-19', // Juneteenth National Independence Day
+  '2026-07-03', // Independence Day (Observed)
   '2026-09-07', // Labor Day
-  '2026-11-26', // Thanksgiving
-  '2026-12-25', // Christmas
+  '2026-11-26', // Thanksgiving Day
+  '2026-12-25', // Christmas Day
 ];
 
 const ukHolidays2026 = [
@@ -71,6 +75,7 @@ export const markets: Market[] = [
         end: '12:30',
       },
     },
+
     tradingDays: [1, 2, 3, 4, 5],
     holidays: [
       '2026-01-01', '2026-01-12', '2026-02-11', '2026-02-23', '2026-03-20',

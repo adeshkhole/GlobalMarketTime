@@ -1,0 +1,85 @@
+{
+  "header": {
+    "title": "Global Trading Dashboard",
+    "subtitle": "Real-time market status for traders",
+    "nav": {
+      "markets": "Markets",
+      "news": "News",
+      "tools": "Tools",
+      "about": "About"
+    }
+  },
+  "hero": {
+    "title": "Track Global Markets in Real-Time",
+    "subtitle": "Stay updated with live market status, opening/closing times, and trading opportunities across 15+ global exchanges",
+    "cta": "View Markets"
+  },
+  "markets": {
+    "title": "Global Market Status",
+    "subtitle": "Live status of stock markets around the world",
+    "categories": {
+      "asia": "Asia-Pacific Markets",
+      "europe": "European Markets",
+      "americas": "American Markets"
+    },
+    "status": {
+      "open": "Open",
+      "closed": "Closed",
+      "opening_soon": "Opening Soon",
+      "closing_soon": "Closing Soon",
+      "lunch": "Lunch Break"
+    },
+    "info": {
+      "localTime": "Local Time",
+      "marketOpens": "Market opens",
+      "marketCloses": "Market closes",
+      "opensIn": "Opens in",
+      "closesIn": "Closes in",
+      "timezone": "Timezone"
+    }
+  },
+  "news": {
+    "title": "Trading News",
+    "subtitle": "Latest updates from trusted sources",
+    "india": "Indian News",
+    "global": "Global News",
+    "sources": {
+      "moneycontrol": "Moneycontrol",
+      "economicTimes": "Economic Times",
+      "ndtvProfit": "NDTV Profit",
+      "livemint": "Livemint",
+      "bloomberg": "Bloomberg",
+      "reuters": "Reuters",
+      "cnbc": "CNBC",
+      "marketwatch": "MarketWatch",
+      "investing": "Investing.com"
+    }
+  },
+  "footer": {
+    "dataSource": "Data Source",
+    "nse": "National Stock Exchange (NSE)",
+    "bse": "Bombay Stock Exchange (BSE)",
+    "alphaVantage": "Alpha Vantage",
+    "disclaimer": "Disclaimer: This tool is for informational purposes only. Trading involves risk.",
+    "rights": "All rights reserved",
+    "links": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "contact": "Contact Us"
+    }
+  },
+  "common": {
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "error": "Error loading data",
+    "retry": "Retry",
+    "close": "Close",
+    "open": "Open"
+  },
+  "time": {
+    "hours": "hours",
+    "minutes": "minutes",
+    "seconds": "seconds",
+    "and": "and"
+  }
+}

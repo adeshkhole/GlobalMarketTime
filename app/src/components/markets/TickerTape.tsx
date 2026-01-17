@@ -74,21 +74,10 @@ export const TickerTape: React.FC = () => {
 
     // Duplicate for seamless loop
     const doubledItems = [...items, ...items];
-    const newsMessages = [
-        "LATEST: GLOBAL MARKETS SHOWING MIXED TRENDS AMID ECONOMIC DATA RELEASES",
-        "NOTICE: ALPHA VANTAGE REAL-TIME DATA ACTIVE",
-        "FLASH: COMMODITY PRICES RESPOND TO GEOPOLITICAL DEVELOPMENTS"
-    ];
-
     return (
         <div className="w-full bg-background border-b border-border/40 overflow-hidden py-1 flex items-center group relative z-[100] h-8 shadow-sm">
-            {/* Legend/Status */}
-            <div className="absolute left-0 top-0 bottom-0 px-3 bg-red-600 text-white flex items-center z-20 shadow-md font-black italic text-[9px] uppercase tracking-tighter animate-pulse">
-                BREAKING
-            </div>
-
             <motion.div
-                className="flex items-center space-x-12 whitespace-nowrap pl-24"
+                className="flex items-center space-x-12 whitespace-nowrap pl-6"
                 animate={{ x: [0, -items.length * 300] }}
                 transition={{
                     x: {
@@ -99,11 +88,6 @@ export const TickerTape: React.FC = () => {
                     }
                 }}
             >
-                {/* News Message first */}
-                <span className="text-[10px] font-bold text-primary px-4 border-r border-border/20 uppercase">
-                    {newsMessages[0]}
-                </span>
-
                 {doubledItems.map((item, i) => (
                     <a
                         key={`${item.symbol}-${i}`}

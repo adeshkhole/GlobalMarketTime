@@ -10,6 +10,14 @@ import {
   Instagram
 } from 'lucide-react';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { LegalContent } from './LegalContent';
 
 export const Footer: React.FC = () => {
   const newsLinks = {
@@ -35,6 +43,24 @@ export const Footer: React.FC = () => {
     { name: 'YouTube', icon: Youtube, url: 'https://youtube.com' },
     { name: 'Instagram', icon: Instagram, url: 'https://instagram.com' },
   ];
+
+  const QuickLink = ({ title, content }: { title: string; content: React.ReactNode }) => (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left">
+          {title}
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="sr-only">{title}</DialogTitle>
+        </DialogHeader>
+        <div className="py-4">
+          {content}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 
   return (
     <motion.footer
@@ -133,49 +159,37 @@ export const Footer: React.FC = () => {
           {/* Data Sources & Links */}
           <div>
             <h4 className="text-sm font-semibold text-foreground mb-4">
-              Data Sources
+              Data Information
             </h4>
             <ul className="space-y-2">
               <li>
                 <span className="text-sm text-muted-foreground">
-                  • National Stock Exchange (NSE)
+                  • 🌩️ Real-time data via Alpha Vantage
                 </span>
               </li>
               <li>
                 <span className="text-sm text-muted-foreground">
-                  • Bombay Stock Exchange (BSE)
+                  • 🏛️ Global Exchange Timings
                 </span>
               </li>
               <li>
                 <span className="text-sm text-muted-foreground">
-                  • Alpha Vantage API
+                  • 📰 AI News Sentiment Engine
                 </span>
               </li>
               <li>
                 <span className="text-sm text-muted-foreground">
-                  • Yahoo Finance
+                  • 🛡️ Privacy Focused (No Ads yet)
                 </span>
               </li>
             </ul>
 
             <div className="mt-6">
-              <h4 className="text-sm font-semibold text-foreground mb-2">Quick Links</h4>
-              <ul className="space-y-1">
-                <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Contact Us
-                  </a>
-                </li>
+              <h4 className="text-sm font-semibold text-foreground mb-2">Legal & Info</h4>
+              <ul className="flex flex-col space-y-2">
+                <li><QuickLink title="About Us" content={<LegalContent.About />} /></li>
+                <li><QuickLink title="Privacy Policy" content={<LegalContent.Privacy />} /></li>
+                <li><QuickLink title="Terms of Service" content={<LegalContent.Terms />} /></li>
               </ul>
             </div>
           </div>
@@ -185,11 +199,11 @@ export const Footer: React.FC = () => {
         <div className="mt-8 pt-8 border-t border-border/40">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-xs text-muted-foreground text-center md:text-left">
-              Disclaimer: This tool is for informational purposes only. Trading involves risk.
+              <strong>Disclaimer:</strong> Financial data is provided "as is" and for informational purposes only. Trading involves significant risk.
             </p>
 
             <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} Global Trading Dashboard. All rights reserved.
+              © {new Date().getFullYear()} Global Market Time Dashboard. Built for Traders.
             </p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Globe, Clock, RefreshCw } from 'lucide-react';
+import { Globe, RefreshCw } from 'lucide-react';
 import type { MarketWithStatus } from '@/types/market';
 import { MarketCard } from '@/components/markets/MarketCard';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ export const MarketsSection: React.FC<MarketsSectionProps> = ({
   loading,
   error,
   onRefresh,
-  lastUpdated,
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
 

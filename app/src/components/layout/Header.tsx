@@ -6,7 +6,8 @@ import {
   Globe,
   Menu,
   X,
-  TrendingUp
+  TrendingUp,
+  RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useThemeContext } from '@/contexts/ThemeContext';
@@ -15,9 +16,11 @@ import type { Language } from '@/utils/translations';
 
 interface HeaderProps {
   lastUpdated: Date;
+  onRefresh?: () => void;
+  loading?: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ lastUpdated }) => {
+export const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading }) => {
   const { theme, toggleTheme } = useThemeContext();
   const { language, setLanguage, languages } = useLanguageContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -112,6 +115,23 @@ export const Header: React.FC<HeaderProps> = ({ lastUpdated }) => {
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Refresh Button */}
+            {onRefresh && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onRefresh}
+                  disabled={loading}
+                >
+                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                </Button>
+              </motion.div>
+            )}
 
             {/* Theme Toggle */}
             <motion.div

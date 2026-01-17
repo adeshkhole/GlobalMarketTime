@@ -56,7 +56,7 @@ export const Footer: React.FC = () => {
             >
               <TrendingUp className="h-8 w-8 text-primary" />
               <div>
-                <h3 className="text-lg font-bold text-foreground">Global Trading Dashboard</h3>
+                <h3 className="text-lg font-bold text-foreground">Global Market Time</h3>
                 <p className="text-xs text-muted-foreground">Real-time market insights</p>
               </div>
             </motion.div>

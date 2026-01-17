@@ -7,7 +7,9 @@ import { Footer } from '@/components/layout/Footer';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { MarketsSection } from '@/components/sections/MarketsSection';
 import { NewsSection } from '@/components/sections/NewsSection';
+import { ToolsSection } from '@/components/sections/ToolsSection';
 import { useMarketStatus } from '@/hooks/useMarketStatus';
+import { GlobalIndicesTracker } from '@/components/markets/GlobalIndicesTracker';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 
@@ -62,9 +64,12 @@ function AppContent() {
         }} />
       </div>
 
+      {/* Ticker */}
+      <GlobalIndicesTracker />
+
       {/* Header */}
-      <Header 
-        onRefresh={handleRefresh} 
+      <Header
+        onRefresh={handleRefresh}
         lastUpdated={lastUpdated}
         loading={loading}
       />
@@ -87,6 +92,9 @@ function AppContent() {
 
         {/* News Section */}
         <NewsSection />
+
+        {/* Tools Section */}
+        <ToolsSection />
       </main>
 
       {/* Footer */}
@@ -105,17 +113,17 @@ function AppContent() {
             whileTap={{ scale: 0.95 }}
             aria-label="Back to top"
           >
-            <svg 
-              className="h-5 w-5" 
-              fill="none" 
-              viewBox="0 0 24 24" 
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth={2} 
-                d="M5 10l7-7m0 0l7 7m-7-7v18" 
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 10l7-7m0 0l7 7m-7-7v18"
               />
             </svg>
           </motion.button>
@@ -123,7 +131,7 @@ function AppContent() {
       </AnimatePresence>
 
       {/* Toast Notifications */}
-      <Toaster 
+      <Toaster
         position="bottom-right"
         toastOptions={{
           style: {

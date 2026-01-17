@@ -1,78 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Newspaper, ExternalLink, TrendingUp, Globe } from 'lucide-react';
+import { Newspaper, ExternalLink, TrendingUp, Globe, Clock, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { marketService, type NewsArticle } from '@/services/marketService';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 export const NewsSection: React.FC = () => {
-  const newsSources = {
-    india: [
-      { 
-        name: 'Moneycontrol', 
-        url: 'https://www.moneycontrol.com', 
-        description: 'Latest stock market news and analysis',
-        icon: '💰',
-        color: 'from-blue-500 to-blue-600'
-      },
-      { 
-        name: 'Economic Times', 
-        url: 'https://economictimes.indiatimes.com', 
-        description: 'Business news and market updates',
-        icon: '📰',
-        color: 'from-orange-500 to-orange-600'
-      },
-      { 
-        name: 'NDTV Profit', 
-        url: 'https://www.ndtv.com/business', 
-        description: 'Financial news and expert opinions',
-        icon: '📺',
-        color: 'from-red-500 to-red-600'
-      },
-      { 
-        name: 'Livemint', 
-        url: 'https://www.livemint.com', 
-        description: 'Real-time market coverage',
-        icon: '🌿',
-        color: 'from-green-500 to-green-600'
-      },
-    ],
-    global: [
-      { 
-        name: 'Bloomberg', 
-        url: 'https://www.bloomberg.com', 
-        description: 'Global financial news leader',
-        icon: '📊',
-        color: 'from-purple-500 to-purple-600'
-      },
-      { 
-        name: 'Reuters', 
-        url: 'https://www.reuters.com', 
-        description: 'International news agency',
-        icon: '🌍',
-        color: 'from-indigo-500 to-indigo-600'
-      },
-      { 
-        name: 'CNBC', 
-        url: 'https://www.cnbc.com', 
-        description: 'Business news and analysis',
-        icon: '📈',
-        color: 'from-cyan-500 to-cyan-600'
-      },
-      { 
-        name: 'MarketWatch', 
-        url: 'https://www.marketwatch.com', 
-        description: 'Markets data and insights',
-        icon: '⌚',
-        color: 'from-teal-500 to-teal-600'
-      },
-      { 
-        name: 'Investing.com', 
-        url: 'https://www.investing.com', 
-        description: 'Comprehensive market tools',
-        icon: '💹',
-        color: 'from-emerald-500 to-emerald-600'
-      },
-    ],
+  const [news, setNews] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      const data = await marketService.getNewsSentiment();
+      setNews(data);
+      setLoading(false);
+    };
+    fetchNews();
+  }, []);
+
+  const getSentimentColor = (score: number) => {
+    if (score > 0.15) return 'text-green-500 bg-green-500/10 border-green-500/20';
+    if (score < -0.15) return 'text-red-500 bg-red-500/10 border-red-500/20';
+    return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+  };
+
+  const formatDate = (dateStr: string) => {
+    // Format: 20240117T120000 -> 17 Jan, 12:00
+    const year = dateStr.slice(0, 4);
+    const month = dateStr.slice(4, 6);
+    const day = dateStr.slice(6, 8);
+    const hour = dateStr.slice(9, 11);
+    const minute = dateStr.slice(11, 13);
+    const date = new Date(`${year}-${month}-${day}T${hour}:${minute}:00Z`);
+    return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) + ', ' +
+      date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
@@ -81,146 +45,136 @@ export const NewsSection: React.FC = () => {
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-4">
             <Newspaper className="h-4 w-4 mr-2" />
-            Latest Updates
+            Live Market Intelligence
           </div>
-          
+
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Trading News
+            Global News & Sentiment
           </h2>
-          
+
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Stay informed with the latest market news and analysis from trusted sources around the world.
+            Real-time AI-powered news analysis and sentiment tracking for global financial markets.
           </p>
         </motion.div>
 
-        {/* News Sources Grid */}
-        <div className="space-y-12">
-          {/* Indian News Sources */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <div className="flex items-center space-x-3 mb-6">
-              <TrendingUp className="h-6 w-6 text-orange-500" />
-              <h3 className="text-xl font-bold text-foreground">Indian News Sources</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {newsSources.india.map((source, index) => (
-                <motion.a
-                  key={source.name}
-                  href={source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group"
-                >
-                  <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 border-border/50 bg-background/50 backdrop-blur-sm">
-                    <div className={`h-2 bg-gradient-to-r ${source.color}`} />
-                    <CardHeader>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{source.icon}</span>
-                        <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {source.name}
-                        </CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {source.description}
-                      </p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="w-full group/btn"
-                      >
-                        Visit Website
-                        <ExternalLink className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
+        {/* News Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <Card key={i} className="h-[400px]">
+                <Skeleton className="h-48 w-full" />
+                <CardHeader>
+                  <Skeleton className="h-6 w-full mb-2" />
+                  <Skeleton className="h-4 w-2/3" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-16 w-full" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : news.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {news.map((item, index) => (
+              <motion.div
+                key={item.url}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -8 }}
+                className="group"
+              >
+                <Card className="h-full flex flex-col overflow-hidden border-border/50 bg-background/50 backdrop-blur-sm transition-all duration-300 hover:shadow-xl hover:shadow-primary/5">
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={item.banner_image || 'https://images.unsplash.com/photo-1611974715853-2b8ef9a3d136?q=80&w=2070&auto=format&fit=crop'}
+                      alt={item.title}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute top-4 right-4">
+                      <Badge variant="outline" className={`backdrop-blur-md font-bold ${getSentimentColor(item.overall_sentiment_score)}`}>
+                        {item.overall_sentiment_label}
+                      </Badge>
+                    </div>
+                    <div className="absolute bottom-4 left-4">
+                      <Badge variant="secondary" className="bg-background/80 backdrop-blur-sm text-[10px] uppercase tracking-tighter">
+                        {item.source}
+                      </Badge>
+                    </div>
+                  </div>
 
-          {/* Global News Sources */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className="flex items-center space-x-3 mb-6">
-              <Globe className="h-6 w-6 text-blue-500" />
-              <h3 className="text-xl font-bold text-foreground">Global News Sources</h3>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {newsSources.global.map((source, index) => (
-                <motion.a
-                  key={source.name}
-                  href={source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group"
-                >
-                  <Card className="h-full overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 border-border/50 bg-background/50 backdrop-blur-sm">
-                    <div className={`h-2 bg-gradient-to-r ${source.color}`} />
-                    <CardHeader>
-                      <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{source.icon}</span>
-                        <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                          {source.name}
-                        </CardTitle>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {source.description}
-                      </p>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="w-full group/btn"
-                      >
-                        Visit Website
-                        <ExternalLink className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
-        </div>
+                  <CardHeader className="flex-grow">
+                    <div className="flex items-center space-x-2 text-xs text-muted-foreground mb-2">
+                      <Clock className="h-3 w-3" />
+                      <span>{formatDate(item.time_published)}</span>
+                    </div>
+                    <CardTitle className="text-lg font-bold leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                      {item.title}
+                    </CardTitle>
+                  </CardHeader>
 
-        {/* Bottom CTA */}
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                      {item.summary}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+                        <TrendingUp className="h-3 w-3" />
+                        <span>AI Sentiment: {(item.overall_sentiment_score * 100).toFixed(0)}%</span>
+                      </div>
+                      <Button variant="ghost" size="sm" asChild className="group/btn">
+                        <a href={item.url} target="_blank" rel="noopener noreferrer">
+                          Read More
+                          <ExternalLink className="h-3 w-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-background/50 rounded-2xl border border-dashed border-border">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+            <h3 className="text-xl font-semibold mb-2">No news available</h3>
+            <p className="text-muted-foreground">Check back later for live market updates.</p>
+          </div>
+        )}
+
+        {/* Bottom Source Info */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-12 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-12 flex flex-col md:flex-row items-center justify-between p-6 rounded-2xl bg-primary/5 border border-primary/10"
         >
-          <p className="text-muted-foreground mb-4">
-            Want to add more news sources? Contact us with your suggestions.
-          </p>
-          <Button variant="outline">
-            Suggest News Source
-          </Button>
+          <div className="flex items-center space-x-4 mb-4 md:mb-0">
+            <Globe className="h-10 w-10 text-primary opacity-50" />
+            <div>
+              <h4 className="font-bold">Alpha Intelligence™</h4>
+              <p className="text-sm text-muted-foreground italic">Powered by official Alpha Vantage News & Sentiment API</p>
+            </div>
+          </div>
+          <div className="flex space-x-4">
+            <div className="text-center px-4">
+              <span className="block text-2xl font-bold text-primary">20+</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Global Exchanges</span>
+            </div>
+            <div className="border-r border-primary/10" />
+            <div className="text-center px-4">
+              <span className="block text-2xl font-bold text-primary">500+</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest">News Outlets</span>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>

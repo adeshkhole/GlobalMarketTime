@@ -19,7 +19,7 @@ const translate = (key: string): string => {
 
 const LanguageContext = createContext<LanguageContextType>({
   language: 'en',
-  setLanguage: () => {},
+  setLanguage: () => { },
   languages: [],
   loading: false,
   t: translate,
@@ -59,12 +59,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ 
-      language, 
-      setLanguage, 
-      languages, 
+    <LanguageContext.Provider value={{
+      language,
+      setLanguage,
+      languages,
       loading,
-      t 
+      t
     }}>
       {children}
     </LanguageContext.Provider>

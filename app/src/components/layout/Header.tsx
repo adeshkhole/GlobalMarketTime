@@ -68,56 +68,78 @@ export const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading 
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-8">
+            <nav className="flex items-center space-x-6">
+              <a href="#markets" className="text-sm font-medium hover:text-primary transition-colors">Markets</a>
+              <a href="#news" className="text-sm font-medium hover:text-primary transition-colors">News</a>
+              <a href="#tools" className="text-sm font-medium hover:text-primary transition-colors">Tools</a>
+            </nav>
 
-            {/* Language Selector */}
-            <div className="relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
-                className="flex items-center space-x-2"
-              >
-                <Globe className="h-4 w-4" />
-                <span className="hidden lg:inline">
-                  {languages.find(lang => lang.code === language)?.name}
-                </span>
-                <motion.div
-                  animate={{ rotate: languageDropdownOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+            <div className="flex items-center space-x-4">
+              {/* Language Selector */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+                  className="flex items-center space-x-2"
                 >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </motion.div>
-              </Button>
-
-              <AnimatePresence>
-                {languageDropdownOpen && (
+                  <Globe className="h-4 w-4" />
+                  <span className="hidden lg:inline">
+                    {languages.find(lang => lang.code === language)?.name}
+                  </span>
                   <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 mt-2 w-40 bg-popover border border-border rounded-md shadow-lg z-50"
+                    animate={{ rotate: languageDropdownOpen ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
                   >
-                    {languages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => handleLanguageChange(lang.code)}
-                        className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-accent transition-colors ${language === lang.code ? 'bg-accent text-accent-foreground' : 'text-foreground'
-                          }`}
-                      >
-                        <span className="text-lg">{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </button>
-                    ))}
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
                   </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                </Button>
 
-            {/* Refresh Button */}
-            {onRefresh && (
+                <AnimatePresence>
+                  {languageDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 mt-2 w-40 bg-popover border border-border rounded-md shadow-lg z-50"
+                    >
+                      {languages.map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => handleLanguageChange(lang.code)}
+                          className={`w-full flex items-center space-x-3 px-4 py-2 text-sm hover:bg-accent transition-colors ${language === lang.code ? 'bg-accent text-accent-foreground' : 'text-foreground'
+                            }`}
+                        >
+                          <span className="text-lg">{lang.flag}</span>
+                          <span>{lang.name}</span>
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Refresh Button */}
+              {onRefresh && (
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRefresh}
+                    disabled={loading}
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* Theme Toggle */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -125,50 +147,35 @@ export const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading 
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={onRefresh}
-                  disabled={loading}
+                  onClick={toggleTheme}
+                  className="relative"
                 >
-                  <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  <AnimatePresence mode="wait">
+                    {theme === 'dark' ? (
+                      <motion.div
+                        key="moon"
+                        initial={{ rotate: -90, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: 90, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Moon className="h-4 w-4" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="sun"
+                        initial={{ rotate: 90, opacity: 0 }}
+                        animate={{ rotate: 0, opacity: 1 }}
+                        exit={{ rotate: -90, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <Sun className="h-4 w-4" />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </Button>
               </motion.div>
-            )}
-
-            {/* Theme Toggle */}
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="relative"
-              >
-                <AnimatePresence mode="wait">
-                  {theme === 'dark' ? (
-                    <motion.div
-                      key="moon"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Moon className="h-4 w-4" />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="sun"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      <Sun className="h-4 w-4" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </Button>
-            </motion.div>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -193,6 +200,14 @@ export const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading 
               className="md:hidden py-4 border-t border-border/40"
             >
               <div className="flex flex-col space-y-4">
+                <nav className="flex flex-col space-y-3">
+                  <a href="#markets" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium hover:text-primary transition-colors px-2 py-1">Markets</a>
+                  <a href="#news" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium hover:text-primary transition-colors px-2 py-1">News</a>
+                  <a href="#tools" onClick={() => setMobileMenuOpen(false)} className="text-sm font-medium hover:text-primary transition-colors px-2 py-1">Tools</a>
+                </nav>
+
+                <div className="h-px bg-border/40 w-full" />
+
                 {/* Language Selector Mobile */}
                 <div className="flex items-center space-x-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />

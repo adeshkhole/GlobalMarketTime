@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  TrendingUp, 
+import {
+  TrendingUp,
   ExternalLink,
   Twitter,
   Facebook,
@@ -9,11 +9,9 @@ import {
   Youtube,
   Instagram
 } from 'lucide-react';
-import { useLanguageContext } from '@/contexts/LanguageContext';
+
 
 export const Footer: React.FC = () => {
-  const { t } = useLanguageContext();
-
   const newsLinks = {
     india: [
       { name: 'Moneycontrol', url: 'https://www.moneycontrol.com', icon: '💰' },
@@ -50,7 +48,7 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-1">
-            <motion.div 
+            <motion.div
               className="flex items-center space-x-3 mb-4"
               whileHover={{ scale: 1.02 }}
             >
@@ -60,7 +58,7 @@ export const Footer: React.FC = () => {
                 <p className="text-xs text-muted-foreground">Real-time market insights</p>
               </div>
             </motion.div>
-            
+
             <p className="text-sm text-muted-foreground mb-4">
               Stay updated with live market status, opening/closing times, and trading opportunities across global exchanges.
             </p>
@@ -187,9 +185,9 @@ export const Footer: React.FC = () => {
         <div className="mt-8 pt-8 border-t border-border/40">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-xs text-muted-foreground text-center md:text-left">
-              {t('footer.disclaimer') || 'Disclaimer: This tool is for informational purposes only. Trading involves risk.'}
+              Disclaimer: This tool is for informational purposes only. Trading involves risk.
             </p>
-            
+
             <p className="text-xs text-muted-foreground">
               © {new Date().getFullYear()} Global Trading Dashboard. All rights reserved.
             </p>

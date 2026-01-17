@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { marketService } from '@/services/marketService';
 
 interface TickerItem {
@@ -78,7 +78,7 @@ export const TickerTape: React.FC = () => {
         <div className="w-full bg-background border-b border-border/40 overflow-hidden py-1 flex items-center group relative z-[100] h-8 shadow-sm">
             <motion.div
                 className="flex items-center space-x-12 whitespace-nowrap pl-6"
-                animate={{ x: [0, -items.length * 300] }}
+                animate={{ x: [0, -items.length * 150] }}
                 transition={{
                     x: {
                         repeat: Infinity,
@@ -99,17 +99,6 @@ export const TickerTape: React.FC = () => {
                         <span className="text-[11px] font-black text-foreground/60 uppercase tracking-tighter group-hover/item:text-primary transition-colors">
                             {item.name}
                         </span>
-
-                        <span className="text-xs font-mono font-bold text-foreground">
-                            {item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </span>
-
-                        <div className={`flex items-center space-x-1 text-[10px] font-bold ${item.change > 0 ? 'text-green-500' : item.change < 0 ? 'text-red-500' : 'text-muted-foreground'
-                            }`}>
-                            {item.change > 0 ? <TrendingUp className="h-3 w-3" /> : item.change < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
-                            <span>{item.change > 0 ? '+' : ''}{item.change.toFixed(2)}</span>
-                            <span className="opacity-70">({item.change > 0 ? '+' : ''}{item.percentChange.toFixed(2)}%)</span>
-                        </div>
 
                         <ExternalLink className="h-2 w-2 opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
                     </a>

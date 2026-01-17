@@ -192,48 +192,16 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
                                 animate={{ scale: isActive ? 1.5 : 1 }}
                                 whileHover={{ scale: 1.8 }}
                             >
-                                <div className="relative group/pin">
-                                    {/* Advanced Radar Pulse */}
-                                    {m.statusInfo.status === 'open' && (
-                                        <>
-                                            <span className="absolute inset-0 rounded-full bg-green-500/40 animate-ping -z-10 scale-[3]" />
-                                            <span className="absolute inset-0 rounded-full bg-green-500/10 animate-pulse -z-10 scale-[1.5]" />
-                                        </>
-                                    )}
-
-                                    {/* Active Target Reticle (Military/Terminal Style) */}
-                                    {isActive && (
-                                        <div className="absolute inset-0 -m-5 pointer-events-none">
-                                            <div className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-primary animate-pulse" />
-                                            <div className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-primary animate-pulse" />
-                                            <div className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-primary animate-pulse" />
-                                            <div className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-primary animate-pulse" />
-                                            <motion.div
-                                                className="absolute inset-0 border border-primary/20 rounded-full"
-                                                animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.4, 0.1] }}
-                                                transition={{ duration: 2, repeat: Infinity }}
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className={`h-2.5 w-2.5 rounded-full border border-background transition-all duration-500 shadow-[0_0_10px_rgba(0,0,0,0.8)] ${isActive ? 'bg-primary scale-125 z-20' : m.statusInfo.status === 'open' ? 'bg-green-500' : 'bg-red-500'
-                                        }`} />
+                                <div className="relative">
+                                    <div className={`h-3 w-3 rounded-full border-2 border-background shadow-2xl transition-all duration-500 ${isActive ? 'bg-primary scale-125' : m.statusInfo.status === 'open' ? 'bg-green-500' : 'bg-red-500'}`} />
 
                                     {isActive && (
                                         <motion.div
-                                            initial={{ opacity: 0, x: -10 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            className="absolute left-full ml-6 top-1/2 -translate-y-1/2 px-2 py-0.5 bg-background/80 border-l-2 border-primary backdrop-blur-md shadow-2xl z-50 overflow-hidden"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-background/90 border border-primary/40 rounded-lg shadow-2xl text-[10px] font-black text-primary whitespace-nowrap z-50 backdrop-blur-md uppercase tracking-widest"
                                         >
-                                            <div className="text-[10px] font-mono font-black text-primary whitespace-nowrap tracking-widest uppercase flex items-center">
-                                                <span className="mr-2 text-[8px] opacity-40">TARGET ID:</span>
-                                                {m.name}
-                                                <motion.span
-                                                    animate={{ opacity: [1, 0] }}
-                                                    transition={{ duration: 0.5, repeat: Infinity }}
-                                                    className="ml-1 w-1 h-3 bg-primary"
-                                                />
-                                            </div>
+                                            {m.name}
                                         </motion.div>
                                     )}
                                 </div>
@@ -256,60 +224,40 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
                             className="flex flex-col h-full"
                         >
                             {/* Header Info */}
-                            <div className="flex items-center justify-between mb-8 relative">
-                                <div className="text-4xl filter drop-shadow-[0_0_10px_rgba(var(--primary),0.3)]">{selectedMarket.flag}</div>
-                                <div className="flex flex-col items-end">
-                                    <Badge className={`text-[10px] uppercase font-black px-4 py-1 rounded-sm border-none shadow-none ${getStatusColor(selectedMarket.statusInfo.status)}`}>
-                                        ● {selectedMarket.statusInfo.status.replace('_', ' ')}
-                                    </Badge>
-                                    <div className="text-[8px] font-mono text-muted-foreground mt-1 tracking-tighter">SIG-STRENGTH: 98.4%</div>
-                                </div>
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="text-4xl">{selectedMarket.flag}</div>
+                                <Badge className={`text-xs uppercase font-black px-4 py-1 rounded-full border ${getStatusColor(selectedMarket.statusInfo.status)}`}>
+                                    {selectedMarket.statusInfo.status.replace('_', ' ')}
+                                </Badge>
                             </div>
 
-                            <div className="relative mb-8">
-                                <h2 className="text-2xl font-black text-foreground mb-1 leading-none tracking-tighter uppercase">{selectedMarket.name}</h2>
-                                <p className="text-[10px] text-primary font-mono font-bold tracking-[0.3em] flex items-center opacity-80">
-                                    <MapPin className="h-3 w-3 mr-1" />
-                                    {selectedMarket.index}
-                                </p>
-                                {/* Decorative Tech Line */}
-                                <div className="absolute -bottom-2 left-0 w-12 h-1 bg-primary/40" />
-                            </div>
+                            <h2 className="text-2xl font-black text-foreground mb-1 leading-none">{selectedMarket.name}</h2>
+                            <p className="text-sm text-primary font-mono font-bold tracking-widest mb-8 flex items-center">
+                                <MapPin className="h-3 w-3 mr-1" />
+                                {selectedMarket.index}
+                            </p>
 
                             {/* Live Metrics */}
                             <div className="space-y-6 relative">
-                                {/* Scanning Overlay Effect */}
-                                <motion.div
-                                    key={`scan-${selectedMarket.id}`}
-                                    initial={{ opacity: 0.5, height: '100%' }}
-                                    animate={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.8 }}
-                                    className="absolute inset-0 bg-primary/5 z-10 pointer-events-none border-t border-primary/20"
-                                />
-
-                                <div className="bg-muted/30 p-5 rounded-sm border-l-4 border-primary border-t border-r border-b border-border/10 backdrop-blur-md relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-1 opacity-20">
-                                        <div className="w-1 h-1 bg-primary mb-1" />
-                                        <div className="w-1 h-1 bg-primary" />
-                                    </div>
+                                <div className="bg-muted/30 p-5 rounded-2xl border border-border/20 backdrop-blur-md">
                                     <div className="flex items-center justify-between mb-2">
-                                        <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest">LOCAL_SESSION_TIME</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Local Session Time</span>
                                         <Clock className="h-4 w-4 text-primary opacity-50" />
                                     </div>
-                                    <div className="text-3xl font-mono font-black text-foreground tracking-tighter">
+                                    <div className="text-3xl font-mono font-black text-foreground">
                                         <LiveClock timezone={selectedMarket.timezone} />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-sm bg-muted/10 border border-border/20 group hover:border-primary/40 transition-colors">
-                                        <div className="text-[9px] font-mono font-bold text-muted-foreground uppercase mb-1">OPN_CLS_HRS</div>
-                                        <div className="text-sm font-black text-foreground font-mono">{selectedMarket.tradingHours.open} - {selectedMarket.tradingHours.close}</div>
+                                    <div className="p-4 rounded-xl bg-muted/10 border border-border/20">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Trading Hours</div>
+                                        <div className="text-sm font-black text-foreground">{selectedMarket.tradingHours.open} - {selectedMarket.tradingHours.close}</div>
                                     </div>
-                                    <div className="p-4 rounded-sm bg-muted/10 border border-border/20 group hover:border-primary/40 transition-colors">
-                                        <div className="text-[9px] font-mono font-bold text-muted-foreground uppercase mb-1">LNC_BRK_INT</div>
-                                        <div className="text-sm font-black text-foreground font-mono text-xs">
-                                            {selectedMarket.tradingHours.lunch ? `${selectedMarket.tradingHours.lunch.start} - ${selectedMarket.tradingHours.lunch.end}` : 'STASIS'}
+                                    <div className="p-4 rounded-xl bg-muted/10 border border-border/20">
+                                        <div className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Lunch Break</div>
+                                        <div className="text-sm font-black text-foreground">
+                                            {selectedMarket.tradingHours.lunch ? `${selectedMarket.tradingHours.lunch.start} - ${selectedMarket.tradingHours.lunch.end}` : 'N/A'}
                                         </div>
                                     </div>
                                 </div>
@@ -336,31 +284,20 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
                                     href={`https://www.google.com/search?q=${encodeURIComponent(selectedMarket.name + ' ' + selectedMarket.index)}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="w-full flex items-center justify-center space-x-2 bg-primary text-primary-foreground font-black text-[10px] uppercase py-4 rounded-sm hover:brightness-110 transition-all group overflow-hidden relative"
-                                    whileHover={{ y: -2 }}
+                                    className="w-full flex items-center justify-center space-x-2 bg-foreground text-background font-black text-xs uppercase py-4 rounded-2xl hover:bg-primary hover:text-primary-foreground transition-all group"
+                                    whileHover={{ y: -4 }}
                                 >
-                                    <span className="relative z-10">ACCESS_DEEP_INTELLIGENCE</span>
-                                    <ArrowRight className="h-4 w-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-                                    {/* Button Scanning Effect */}
-                                    <motion.div
-                                        className="absolute inset-0 bg-white/20"
-                                        animate={{ x: ['100%', '-100%'] }}
-                                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                    />
+                                    <span>Access Exchange Intelligence</span>
+                                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </motion.a>
-                                <div className="flex flex-col items-center mt-4">
-                                    <p className="text-[8px] text-muted-foreground tracking-[0.4em] uppercase font-mono">
-                                        SOURCE::{selectedMarket.dataSource.replace(' ', '_')}
-                                    </p>
-                                    <div className="mt-2 flex space-x-1 opacity-20">
-                                        {[1, 2, 3, 4, 5].map(i => <div key={i} className="w-1 h-3 bg-primary" />)}
-                                    </div>
-                                </div>
+                                <p className="text-[9px] text-muted-foreground text-center mt-4 tracking-widest uppercase">
+                                    Intelligence Provider: {selectedMarket.dataSource}
+                                </p>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
-        </div>
+        </div >
     );
 };

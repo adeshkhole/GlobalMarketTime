@@ -12,6 +12,7 @@ interface MarketsSectionProps {
   lastUpdated: Date;
 }
 
+import { EconomicPulse } from '@/components/markets/EconomicPulse';
 import { ModernMarketHub } from '@/components/markets/ModernMarketHub';
 
 export const MarketsSection: React.FC<MarketsSectionProps> = ({
@@ -45,6 +46,13 @@ export const MarketsSection: React.FC<MarketsSectionProps> = ({
             Interactive world map and live session tracking. Select a market to dive deep into its data.
           </p>
         </motion.div>
+
+        {/* Real-Time Economic Pulse */}
+        {!loading && (
+          <div className="mb-12">
+            <EconomicPulse />
+          </div>
+        )}
 
         {/* Intelligence Hub */}
         {!loading && marketData.length > 0 && (

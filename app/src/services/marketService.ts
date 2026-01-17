@@ -166,15 +166,37 @@ export const marketService = {
             } else if (data['Note']) {
                 console.warn('⚠️ Alpha Vantage Rate Limit Hit:', data['Note']);
                 return [];
-            } else if (data['Information']) {
-                console.warn('ℹ️ Alpha Vantage Info:', data['Information']);
-                return [];
             }
-            console.error('Unexpected API Response:', data);
             return [];
         } catch (error) {
             console.error('Error fetching news sentiment:', error);
             return [];
+        }
+    },
+
+    async getEconomicIndicator(indicator: 'REAL_GDP' | 'CPI' | 'FEDERAL_FUNDS_RATE'): Promise<{ value: string; date: string } | null> {
+        const cacheKey = `indicator_${indicator}`;
+        const cachedData = getFromCache<{ value: string; date: string }>(cacheKey);
+
+        if (cachedData) return cachedData;
+        if (!API_KEY) return null;
+
+        try {
+            const response = await fetch(`${BASE_URL}?function=${indicator}&interval=monthly&apikey=${API_KEY}`);
+            const data = await response.json();
+
+            if (data.data && data.data.length > 0) {
+                const latest = {
+                    value: data.data[0].value,
+                    date: data.data[0].date
+                };
+                setToCache(cacheKey, latest);
+                return latest;
+            }
+            return null;
+        } catch (error) {
+            console.error(`Error fetching ${indicator}:`, error);
+            return null;
         }
     }
 };

@@ -68,7 +68,13 @@ export const marketService = {
 
         if (cachedData) return cachedData;
 
+        if (!API_KEY) {
+            console.error('Alpha Vantage API Key is missing! Check your .env file or GitHub Secrets.');
+            return null;
+        }
+
         try {
+            console.log(`Fetching quote for ${symbol}...`);
             const response = await fetch(`${BASE_URL}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`);
             const data = await response.json();
 
@@ -82,6 +88,10 @@ export const marketService = {
 
                 setToCache(cacheKey, quote);
                 return quote;
+            } else if (data['Note'] || data['Information']) {
+                console.warn(`Alpha Vantage API Message for ${symbol}:`, data['Note'] || data['Information']);
+            } else if (data['Error Message']) {
+                console.error(`Alpha Vantage API Error for ${symbol}:`, data['Error Message']);
             }
             return null;
         } catch (error) {
@@ -95,6 +105,8 @@ export const marketService = {
         const cachedData = getFromCache<ExchangeRate>(cacheKey);
 
         if (cachedData) return cachedData;
+
+        if (!API_KEY) return null;
 
         try {
             const response = await fetch(`${BASE_URL}?function=CURRENCY_EXCHANGE_RATE&from_currency=${from}&to_currency=${to}&apikey=${API_KEY}`);
@@ -123,8 +135,14 @@ export const marketService = {
 
         if (cachedData) return cachedData;
 
+        if (!API_KEY) {
+            console.error('Alpha Vantage API Key is missing for News Fetch!');
+            return [];
+        }
+
         try {
             const tickersParam = tickers ? `&tickers=${tickers}` : '';
+            console.log('Fetching News & Sentiment...');
             const response = await fetch(`${BASE_URL}?function=NEWS_SENTIMENT${tickersParam}&limit=10&apikey=${API_KEY}`);
             const data = await response.json();
 
@@ -143,7 +161,14 @@ export const marketService = {
 
                 setToCache(cacheKey, news);
                 return news;
+            } else if (data['Note']) {
+                console.warn('⚠️ Alpha Vantage Rate Limit Hit:', data['Note']);
+                return [];
+            } else if (data['Information']) {
+                console.warn('ℹ️ Alpha Vantage Info:', data['Information']);
+                return [];
             }
+            console.error('Unexpected API Response:', data);
             return [];
         } catch (error) {
             console.error('Error fetching news sentiment:', error);

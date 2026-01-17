@@ -14,9 +14,18 @@ export const NewsSection: React.FC = () => {
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
-      const data = await marketService.getNewsSentiment();
-      setNews(data);
-      setLoading(false);
+      try {
+        const data = await marketService.getNewsSentiment();
+        if (data.length === 0) {
+          setNews([]);
+        } else {
+          setNews(data);
+        }
+      } catch (err) {
+        console.error('Failed to load news:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchNews();
   }, []);
@@ -143,10 +152,14 @@ export const NewsSection: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 bg-background/50 rounded-2xl border border-dashed border-border">
-            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-            <h3 className="text-xl font-semibold mb-2">No news available</h3>
-            <p className="text-muted-foreground">Check back later for live market updates.</p>
+          <div className="text-center py-20 bg-background/50 rounded-2xl border border-dashed border-border group">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20 group-hover:opacity-40 transition-opacity" />
+            <h3 className="text-xl font-semibold mb-2">News feed is currently quiet</h3>
+            <p className="text-muted-foreground max-w-sm mx-auto">
+              This could be due to the Alpha Vantage free tier limit (25 requests per day) being reached.
+              <br /><br />
+              <span className="text-xs italic bg-primary/5 px-3 py-1 rounded-full">Pro Tip: Check back tomorrow or refresh in a few hours!</span>
+            </p>
           </div>
         )}
 

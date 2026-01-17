@@ -6,7 +6,6 @@ import {
   Globe,
   Menu,
   X,
-  TrendingUp,
   RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -50,20 +49,29 @@ export const Header: React.FC<HeaderProps> = ({ lastUpdated, onRefresh, loading 
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <motion.div
-            className="flex items-center space-x-3"
+            className="flex items-center space-x-4 cursor-pointer"
             whileHover={{ scale: 1.02 }}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="relative">
-              <TrendingUp className="h-8 w-8 text-primary" />
+            <div className="relative flex items-center justify-center">
+              <div className="w-10 h-10 overflow-hidden rounded-full flex items-center justify-center bg-white/5 border border-primary/20">
+                <img
+                  src="GlobalMarketTime.png"
+                  alt="Global Market Time"
+                  className="w-full h-full object-contain"
+                />
+              </div>
               <motion.div
-                className="absolute inset-0 bg-primary/20 rounded-full"
-                animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute inset-0 bg-primary/30 rounded-full -z-10"
+                animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                transition={{ duration: 3, repeat: Infinity }}
               />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">Global Market Time</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Real-time market status for traders</p>
+            <div className="flex flex-col">
+              <h1 className="text-xl font-black tracking-tight text-foreground leading-none">Global Market Time</h1>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mt-1.5 opacity-80 hidden sm:block">
+                Real-time market status for traders
+              </p>
             </div>
           </motion.div>
 

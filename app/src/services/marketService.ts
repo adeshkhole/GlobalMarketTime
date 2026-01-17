@@ -100,11 +100,13 @@ export const marketService = {
         }
     },
 
-    async getExchangeRate(from: string, to: string): Promise<ExchangeRate | null> {
+    async getExchangeRate(from: string, to: string, ignoreCache: boolean = false): Promise<ExchangeRate | null> {
         const cacheKey = `rate_${from}_${to}`;
-        const cachedData = getFromCache<ExchangeRate>(cacheKey);
 
-        if (cachedData) return cachedData;
+        if (!ignoreCache) {
+            const cachedData = getFromCache<ExchangeRate>(cacheKey);
+            if (cachedData) return cachedData;
+        }
 
         if (!API_KEY) return null;
 

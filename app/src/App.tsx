@@ -9,7 +9,7 @@ import { MarketsSection } from '@/components/sections/MarketsSection';
 import { NewsSection } from '@/components/sections/NewsSection';
 import { ToolsSection } from '@/components/sections/ToolsSection';
 import { useMarketStatus } from '@/hooks/useMarketStatus';
-import { GlobalIndicesTracker } from '@/components/markets/GlobalIndicesTracker';
+import { TickerTape } from '@/components/markets/TickerTape';
 import { Toaster } from '@/components/ui/sonner';
 import { toast } from 'sonner';
 
@@ -65,7 +65,7 @@ function AppContent() {
       </div>
 
       {/* Ticker */}
-      <GlobalIndicesTracker />
+      <TickerTape />
 
       {/* Header */}
       <Header

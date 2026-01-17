@@ -75,7 +75,8 @@ export const CurrencyConverter: React.FC = () => {
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
-        const rateData = await marketService.getExchangeRate(fromCurrency, toCurrency);
+        // Pass 'true' to ignore cache and get absolute latest price
+        const rateData = await marketService.getExchangeRate(fromCurrency, toCurrency, true);
         if (rateData) {
             setRates(prev => ({
                 ...prev,

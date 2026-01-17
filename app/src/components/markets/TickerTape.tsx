@@ -1,0 +1,136 @@
+import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, Minus, ExternalLink } from 'lucide-react';
+import { marketService } from '@/services/marketService';
+
+interface TickerItem {
+    name: string;
+    symbol: string;
+    value: number;
+    change: number;
+    percentChange: number;
+    type: 'index' | 'commodity' | 'forex';
+}
+
+const TICKER_DATA: TickerItem[] = [
+    { name: 'NIFTY 50', symbol: 'NIFTY', value: 22032.55, change: 156.40, percentChange: 0.71, type: 'index' },
+    { name: 'SENSEX', symbol: 'SENSEX', value: 72568.45, change: 485.30, percentChange: 0.67, type: 'index' },
+    { name: 'GOLD', symbol: 'XAU', value: 2035.40, change: 12.20, percentChange: 0.60, type: 'commodity' },
+    { name: 'S&P 500', symbol: '^GSPC', value: 5026.61, change: -12.45, percentChange: -0.25, type: 'index' },
+    { name: 'NASDAQ', symbol: '^IXIC', value: 15990.66, change: 45.12, percentChange: 0.28, type: 'index' },
+    { name: 'CRUDE OIL', symbol: 'WTI', value: 78.45, change: -0.65, percentChange: -0.82, type: 'commodity' },
+    { name: 'DOW JONES', symbol: '^DJI', value: 38627.99, change: -54.64, percentChange: -0.14, type: 'index' },
+    { name: 'NIKKEI 225', symbol: '^N225', value: 38487.24, change: 566.35, percentChange: 1.49, type: 'index' },
+    { name: 'USD/INR', symbol: 'USDINR', value: 83.05, change: 0.02, percentChange: 0.02, type: 'forex' },
+];
+
+export const TickerTape: React.FC = () => {
+    const [items, setItems] = useState<TickerItem[]>(TICKER_DATA);
+
+    useEffect(() => {
+        const updateTicker = async () => {
+            try {
+                const updated = await Promise.all(items.map(async (item) => {
+                    let priceData = null;
+                    if (item.type === 'index') {
+                        priceData = await marketService.getGlobalQuote(item.symbol);
+                    } else if (item.type === 'forex' || item.type === 'commodity') {
+                        // For simplicity in this demo, we use exchange rate for forex/commodities
+                        const rate = await marketService.getExchangeRate(item.symbol === 'USDINR' ? 'USD' : 'XAU', 'USD');
+                        if (rate) {
+                            priceData = { price: rate.rate, change: 0, changePercent: 0 };
+                        }
+                    }
+
+                    if (priceData) {
+                        return {
+                            ...item,
+                            value: priceData.price,
+                            change: priceData.change,
+                            percentChange: priceData.changePercent
+                        };
+                    }
+                    return item;
+                }));
+                setItems(updated);
+            } catch (e) {
+                console.error("Ticker update failed", e);
+            }
+        };
+
+        updateTicker();
+        const interval = setInterval(updateTicker, 60 * 60 * 1000); // Update every hour to save API calls
+        return () => clearInterval(interval);
+    }, []);
+
+    const getYahooLink = (symbol: string) => {
+        if (symbol === 'NIFTY') return 'https://finance.yahoo.com/quote/%5ENSEI';
+        if (symbol === 'SENSEX') return 'https://finance.yahoo.com/quote/%5EBSESN';
+        if (symbol === 'USDINR') return 'https://finance.yahoo.com/quote/USDINR=X';
+        if (symbol === 'XAU') return 'https://finance.yahoo.com/quote/GC=F';
+        if (symbol === 'WTI') return 'https://finance.yahoo.com/quote/CL=F';
+        return `https://finance.yahoo.com/quote/${symbol}`;
+    };
+
+    // Duplicate for seamless loop
+    const doubledItems = [...items, ...items];
+    const newsMessages = [
+        "LATEST: GLOBAL MARKETS SHOWING MIXED TRENDS AMID ECONOMIC DATA RELEASES",
+        "NOTICE: ALPHA VANTAGE REAL-TIME DATA ACTIVE",
+        "FLASH: COMMODITY PRICES RESPOND TO GEOPOLITICAL DEVELOPMENTS"
+    ];
+
+    return (
+        <div className="w-full bg-background border-b border-border/40 overflow-hidden py-1 flex items-center group relative z-[100] h-8 shadow-sm">
+            {/* Legend/Status */}
+            <div className="absolute left-0 top-0 bottom-0 px-3 bg-red-600 text-white flex items-center z-20 shadow-md font-black italic text-[9px] uppercase tracking-tighter animate-pulse">
+                BREAKING
+            </div>
+
+            <motion.div
+                className="flex items-center space-x-12 whitespace-nowrap pl-24"
+                animate={{ x: [0, -items.length * 300] }}
+                transition={{
+                    x: {
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        duration: 80,
+                        ease: "linear"
+                    }
+                }}
+            >
+                {/* News Message first */}
+                <span className="text-[10px] font-bold text-primary px-4 border-r border-border/20 uppercase">
+                    {newsMessages[0]}
+                </span>
+
+                {doubledItems.map((item, i) => (
+                    <a
+                        key={`${item.symbol}-${i}`}
+                        href={getYahooLink(item.symbol)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center space-x-3 hover:bg-primary/5 px-3 py-1 rounded-md transition-all duration-200 group/item"
+                    >
+                        <span className="text-[11px] font-black text-foreground/60 uppercase tracking-tighter group-hover/item:text-primary transition-colors">
+                            {item.name}
+                        </span>
+
+                        <span className="text-xs font-mono font-bold text-foreground">
+                            {item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+
+                        <div className={`flex items-center space-x-1 text-[10px] font-bold ${item.change > 0 ? 'text-green-500' : item.change < 0 ? 'text-red-500' : 'text-muted-foreground'
+                            }`}>
+                            {item.change > 0 ? <TrendingUp className="h-3 w-3" /> : item.change < 0 ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
+                            <span>{item.change > 0 ? '+' : ''}{item.change.toFixed(2)}</span>
+                            <span className="opacity-70">({item.change > 0 ? '+' : ''}{item.percentChange.toFixed(2)}%)</span>
+                        </div>
+
+                        <ExternalLink className="h-2 w-2 opacity-0 group-hover/item:opacity-100 transition-opacity text-primary" />
+                    </a>
+                ))}
+            </motion.div>
+        </div>
+    );
+};

@@ -20,6 +20,12 @@ export interface Market {
   dataSource: string;
 }
 
+export interface NextEvent {
+  type: 'open' | 'close';
+  time: string;
+  in?: string;
+}
+
 export interface MarketStatusInfo {
   status: MarketStatus;
   localTime: Date;
@@ -29,6 +35,7 @@ export interface MarketStatusInfo {
   isHoliday: boolean;
   nextOpen?: Date;
   nextClose?: Date;
+  nextEvent?: NextEvent;
 }
 
 export interface MarketWithStatus extends Market {

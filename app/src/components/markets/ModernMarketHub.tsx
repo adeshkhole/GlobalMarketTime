@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, AlertCircle, Globe, Zap, ArrowRight, MapPin } from 'lucide-react';
+import { Clock, AlertCircle, Globe, Zap, ArrowRight, MapPin, ChevronUp, ChevronDown } from 'lucide-react';
 import type { MarketWithStatus } from '@/types/market';
 import { LiveClock } from '@/components/common/LiveClock';
 import { Badge } from '@/components/ui/badge';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface ModernMarketHubProps {
     marketData: MarketWithStatus[];
@@ -12,7 +13,36 @@ interface ModernMarketHubProps {
 export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) => {
     const [selectedId, setSelectedId] = useState<string>(marketData[0]?.id || '');
     const [isPaused, setIsPaused] = useState(false);
+    const [autoScroll, setAutoScroll] = useState(true);
+    const [expandedRegions, setExpandedRegions] = useState<Record<string, boolean>>({});
+    const isMobile = useMediaQuery('(max-width: 768px)');
     const selectedMarket = marketData.find(m => m.id === selectedId) || marketData[0];
+    
+    // Toggle region expansion on mobile
+    const toggleRegion = useCallback((region: string) => {
+        setExpandedRegions(prev => ({
+            ...prev,
+            [region]: !prev[region]
+        }));
+    }, []);
+    
+    // Auto-expand region if it contains the selected market
+    useEffect(() => {
+        if (selectedId && isMobile) {
+            const selectedMarket = marketData.find(m => m.id === selectedId);
+            if (selectedMarket) {
+                const region = Object.entries(regions).find(([_, markets]) => 
+                    markets.some(m => m.id === selectedId)
+                )?.[0];
+                if (region && !expandedRegions[region]) {
+                    setExpandedRegions(prev => ({
+                        ...prev,
+                        [region]: true
+                    }));
+                }
+            }
+        }
+    }, [selectedId, isMobile, marketData]);
 
     // Auto-cycle logic
     useEffect(() => {
@@ -43,19 +73,40 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
             'Europe': marketData.filter(m => ['Germany', 'United Kingdom', 'European Union', 'Switzerland'].includes(m.country)),
             'Americas': marketData.filter(m => ['United States', 'Canada', 'Brazil'].includes(m.country))
         };
+        
+        // Initialize expanded regions if empty
+        if (Object.keys(expandedRegions).length === 0 && isMobile) {
+            setExpandedRegions(Object.keys(r).reduce((acc, region) => ({
+                ...acc,
+                [region]: false
+            }), {}));
+        }
+        
         return r;
-    }, [marketData]);
+    }, [marketData, expandedRegions, isMobile]);
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'open': return 'text-green-500 bg-green-500/10 border-green-500/20';
-            case 'closed': return 'text-red-500 bg-red-500/10 border-red-500/20';
-            case 'lunch': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
-            default: return 'text-orange-500 bg-orange-500/10 border-orange-500/20';
+            case 'open': return 'bg-green-500/10 border-green-500/20 text-green-500';
+            case 'closed': return 'bg-red-500/10 border-red-500/20 text-red-500';
+            case 'lunch': return 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500';
+            default: return 'bg-orange-500/10 border-orange-500/20 text-orange-500';
         }
     };
+    
+    const getStatusText = (status: string): string => {
+        switch (status) {
+            case 'open': return 'Open';
+            case 'closed': return 'Closed';
+            case 'lunch': return 'Lunch Break';
+            default: return 'Unknown';
+        }
+    };
+    
+    const formatTime = (date: Date): string => {
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    };
 
-    // Approximate Map Coordinates (Holographic style)
     const marketCoords: Record<string, { x: string, y: string }> = {
         'nse_bse': { x: '70%', y: '58%' },
         'tse': { x: '88%', y: '40%' },
@@ -79,26 +130,44 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
         <div className="relative w-full max-w-7xl mx-auto border border-border/40 rounded-3xl overflow-hidden bg-background/50 backdrop-blur-xl shadow-2xl flex flex-col lg:flex-row h-auto lg:h-[700px]">
 
             {/* Left Panel: Market Navigation */}
-            <div className="w-full lg:w-80 border-r border-border/40 p-6 flex flex-col bg-muted/10">
-                <div className="flex flex-col space-y-2 mb-8 bg-background/40 p-4 rounded-2xl border border-border/20 backdrop-blur-md relative overflow-hidden group">
-                    <div className="flex items-center space-x-2 relative z-10">
-                        <motion.div
-                            animate={isPaused ? {} : { rotate: [0, 10, -10, 0], scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                        >
-                            <Zap className={`h-5 w-5 ${isPaused ? 'text-muted-foreground' : 'text-primary'}`} />
-                        </motion.div>
-                        <h3 className="font-black text-sm uppercase tracking-widest text-foreground">Global Control</h3>
+            <div className="w-full lg:w-80 border-r border-border/40 p-4 lg:p-6 flex flex-col bg-muted/10">
+                <div className="flex flex-col space-y-2 mb-4 lg:mb-8 bg-background/40 p-3 lg:p-4 rounded-2xl border border-border/20 backdrop-blur-md relative overflow-hidden group">
+                    <div className="flex items-center justify-between relative z-10">
+                        <div className="flex items-center space-x-2">
+                            <motion.div
+                                animate={isPaused ? {} : { rotate: [0, 10, -10, 0], scale: [1, 1.2, 1] }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                            >
+                                <Zap className={`h-5 w-5 ${isPaused ? 'text-muted-foreground' : 'text-primary'}`} />
+                            </motion.div>
+                            <h3 className="font-black text-sm uppercase tracking-widest text-foreground">
+                                {isMobile ? 'Markets' : 'Global Control'}
+                            </h3>
+                        </div>
+                        
+                        {isMobile && (
+                            <button 
+                                onClick={() => setAutoScroll(!autoScroll)}
+                                className="text-xs px-2 py-1 rounded-full border border-border/40 bg-background/50 flex items-center space-x-1"
+                            >
+                                <span>{autoScroll ? 'Auto' : 'Manual'}</span>
+                                {autoScroll ? (
+                                    <Clock className="h-3 w-3 text-primary" />
+                                ) : (
+                                    <MapPin className="h-3 w-3 text-primary" />
+                                )}
+                            </button>
+                        )}
                     </div>
 
                     <div className="flex items-center space-x-2 relative z-10">
                         <div className={`h-1.5 w-1.5 rounded-full ${isPaused ? 'bg-orange-500' : 'bg-primary animate-pulse'}`} />
                         <span className={`text-[9px] font-bold uppercase tracking-[0.2em] ${isPaused ? 'text-orange-500' : 'text-primary'}`}>
-                            {isPaused ? 'Manual Override' : 'Surveillance Active'}
+                            {isPaused ? 'Manual' : 'Auto'}
                         </span>
                     </div>
 
-                    {!isPaused && (
+                    {!isPaused && autoScroll && (
                         <motion.div
                             className="absolute bottom-0 left-0 h-[1px] bg-primary/40"
                             initial={{ width: 0 }}
@@ -108,51 +177,99 @@ export const ModernMarketHub: React.FC<ModernMarketHubProps> = ({ marketData }) 
                     )}
                 </div>
 
-                <div className="flex-grow h-[400px] lg:h-full overflow-hidden relative">
-                    <motion.div
-                        className="space-y-8 pb-32"
-                        animate={{ y: [0, -500] }}
-                        transition={{
-                            duration: 30,
-                            repeat: Infinity,
-                            ease: "linear"
-                        }}
-                        onMouseEnter={(e) => {
-                            // @ts-ignore
-                            e.currentTarget.style.animationPlayState = 'paused';
-                        }}
+                <div className="flex-grow h-[400px] lg:h-full overflow-y-auto relative">
+                    <div 
+                        className="space-y-4 lg:space-y-8 pb-8 lg:pb-32"
+                        onTouchStart={() => isMobile && setAutoScroll(false)}
                     >
-                        {[...Object.entries(regions), ...Object.entries(regions)].map(([name, markets], groupIdx) => (
-                            <div key={`${name}-${groupIdx}`}>
-                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mb-4 flex items-center justify-between">
-                                    {name}
-                                    <span className="text-primary">{markets.filter(m => m.statusInfo.status === 'open').length} Open</span>
-                                </h4>
-                                <div className="space-y-1">
-                                    {markets.map(m => (
-                                        <button
-                                            key={`${m.id}-${groupIdx}`}
-                                            onClick={() => handleManualSelect(m.id)}
-                                            className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all duration-300 ${selectedId === m.id
-                                                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105'
-                                                : 'hover:bg-muted text-muted-foreground hover:text-foreground'
-                                                }`}
-                                        >
-                                            <div className="flex items-center space-x-3">
-                                                <span>{m.flag}</span>
-                                                <span className="font-semibold">{m.name.split(' ')[0]}</span>
-                                            </div>
-                                            <div className={`h-1.5 w-1.5 rounded-full ${m.statusInfo.status === 'open' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)] animate-pulse' : 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.4)]'}`} />
-                                        </button>
-                                    ))}
+                        {Object.entries(regions).map(([name, markets]) => {
+                            const isExpanded = isMobile ? expandedRegions[name] : true;
+                            const openMarkets = markets.filter(m => m.statusInfo.status === 'open').length;
+                            
+                            return (
+                                <div key={name} className="bg-background/40 rounded-xl p-2 lg:p-0 lg:bg-transparent">
+                                    <button 
+                                        onClick={() => isMobile && toggleRegion(name)}
+                                        className={`w-full flex items-center justify-between ${isMobile ? 'p-2 rounded-lg hover:bg-muted/50' : 'pointer-events-none'}`}
+                                    >
+                                        <h4 className="text-xs lg:text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] flex items-center">
+                                            {name}
+                                            <span className="ml-2 text-primary">
+                                                ({openMarkets}/{markets.length} Open)
+                                            </span>
+                                        </h4>
+                                        {isMobile && (
+                                            isExpanded ? 
+                                                <ChevronUp className="h-4 w-4 text-muted-foreground" /> : 
+                                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                                        )}
+                                    </button>
+                                    
+                                    {(isMobile ? isExpanded : true) && (
+                                        <div className="mt-2 space-y-2">
+                                            {markets.map((m) => {
+                                                const isActive = selectedId === m.id;
+                                                const status = m.statusInfo.status;
+                                                const statusText = getStatusText(status);
+                                                const statusColor = getStatusColor(status);
+                                                
+                                                return (
+                                                    <motion.button
+                                                        key={m.id}
+                                                        onClick={() => handleManualSelect(m.id)}
+                                                        className={`w-full flex flex-col p-3 rounded-xl text-left transition-all duration-300 border ${
+                                                            isActive 
+                                                                ? 'bg-primary/10 border-primary/30 shadow-md scale-[1.02]' 
+                                                                : 'border-border/30 hover:border-primary/20 bg-background/50 hover:bg-muted/30'
+                                                        }`}
+                                                        whileHover={{ scale: isMobile ? 1.01 : 1.02 }}
+                                                        whileTap={{ scale: 0.99 }}
+                                                    >
+                                                        <div className="flex items-center justify-between w-full">
+                                                            <div className="flex items-center space-x-3">
+                                                                <span className="text-lg">{m.flag}</span>
+                                                                <div className="text-left">
+                                                                    <div className="font-semibold text-sm">{m.name.split(' ')[0]}</div>
+                                                                    <div className="text-xs text-muted-foreground">
+                                                                        {m.statusInfo.localTime && formatTime(new Date(m.statusInfo.localTime))}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div className="flex items-center space-x-2">
+                                                                <Badge 
+                                                                    className={`text-xs py-0.5 px-2 h-5 ${statusColor} border`}
+                                                                >
+                                                                    {statusText}
+                                                                </Badge>
+                                                                <div className={`h-2 w-2 rounded-full ${status === 'open' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        {isMobile && isActive && m.statusInfo.nextEvent && (
+                                                            <div className="mt-2 pt-2 border-t border-border/20 text-xs text-muted-foreground">
+                                                                <div className="flex items-center justify-between">
+                                                                    <span>Next:</span>
+                                                                    <span className="font-medium">
+                                                                        {m.statusInfo.nextEvent.type === 'close' ? 'Closes' : 'Opens'} at {formatTime(new Date(m.statusInfo.nextEvent.time))}
+                                                                    </span>
+                                                                </div>
+                                                                {m.statusInfo.nextEvent.in && (
+                                                                    <div className="text-right text-xs text-muted-foreground">
+                                                                        in {m.statusInfo.nextEvent.in}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </motion.button>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))}
-                    </motion.div>
-
-                    {/* Fade Overlays for Scroll */}
-                    <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-muted/10 to-transparent z-10 pointer-events-none" />
-                    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-muted/10 to-transparent z-10 pointer-events-none" />
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
